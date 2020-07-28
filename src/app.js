@@ -9,13 +9,13 @@ fs.readFile("README.md", "utf-8", (e,file) => {
     console.log(linkFound);
   }
 })
-const file = fs.readdir('./',(error, file)=>{
+const file = fs.readdir('../srcc/',(error, file)=>{
   if (error){
     throw error;
   }
   console.log('me trae la lista de archivos',file)
 
-  fs.readFile('./README.md', 'UTF-8', (error, archivo)=>{
+  fs.readFile('../README.md/', 'UTF-8', (error, archivo)=>{
     if (error){
       throw error;
     }

@@ -1,4 +1,26 @@
 {
   "name": "md-links",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "description": "## Índice",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eilianacar/SCL013-md-links.git"
+  },
+  "author": "Nadia Gincoff - Eiliana Aguilar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eilianacar/SCL013-md-links/issues"
+  },
+  "homepage": "https://github.com/eilianacar/SCL013-md-links#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "yargs": "^15.4.1"
+  }
 }
