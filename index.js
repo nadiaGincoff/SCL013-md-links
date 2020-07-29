@@ -1,40 +1,28 @@
-const fs = require('fs');
-const regEx = /(((https?:\/\/)|(http?:\/\/)|(www\.))[^\s\n]+)(?=\))/g;
+// const argv = require('./config/yargs').argv
+// const { listarArchivosDeDirectorio } = require('./src/readFiles')
 
-// Lee los links que estan dentro del readme
-// fs.readFile("README.md", "utf-8", (e, file) => {
-//   if (e){
-//     console.log(e);
-//   }else{
-//     const linkFound = file.match(regEx)
-//     console.log(linkFound);
-//   }
-// })
+// // Accede a la ruta
+// let path = process.argv[2]
+// // let parametro = argv2[2]
 
+// // Accede al comando ejecutado
+// // let command = argv._[0]
 
-// Lista los archivos del directorio
-const file = fs.readdir('./',(error, file) => {
-  if (error){
-    throw error;
-  }
-  console.log('me trae la lista de archivos', file)
-
-  fs.readFile('./README.md', 'UTF-8', (error, archivo)=>{
-    if (error){
-      throw error;
-    }
-    //console.log (archivo);
-  })
-  //console.log('Contenido de Archivo');
-
-});
-
-//Validar que un archivo existe
-// const archivo = 'README.md'
-// const valideFile = fs.access( archivo, fs.constants.F_OK, (err) =>{
-// if(err){
-//   console.log('El archivo no existe');
-// }else{
-//   console.log('El archivo si existe');
+// switch( command ) {
+//   case 'validate':
+//     console.log(listarArchivosDeDirectorio(path))
+//   break;
+//   case 'stats':
+//     console.log('stats')
+//   break;
+//   default:
+//     console.log('Command not recognized');
 // }
-// })
+
+// console.log('holi', path)
+
+
+
+
+
+
