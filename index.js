@@ -1,47 +1,35 @@
 #!/usr/bin/env node
 'use strict';
 
+const colors = require('colors')
 const argv = require('./config/yargs').argv
 const path = require('path');
-const { readFile, readDirectoryFiles } = require('./src/readFiles')
 
-const loadedFiles = []
-// Accede a la ruta
 const route = process.argv[2]
-// console.log(route)
+const { readFile, readDirectoryFiles } = require('./src/fileReaded')
 
-const verifyPath = (route) => {
+const mdLinks = (route) => {
   let searchMd = '.md'
   let indexFile = route.includes(searchMd)
-
   // proceso el path y veo que es
   if (indexFile != false) {
-    console.log('loque sea', indexFile)
     readFile(route, "utf-8")
       .then(response => {
-        console.log(response)
+        commandResponse(response, route);
       })
       .catch(error => console.log(error))
-  } else {
 
+  } else {
     readDirectoryFiles(route, "utf-8")
       .then(files => {
-
         files.forEach(filePath => {
-
           readFile(filePath)
-            .then(file => {
-
-              let pathOfFile = filePathName(route);
-
-              loadedFiles.push({route: pathOfFile, file: file})
-
-              console.log('devuelvo el array de loadedFiles')
-              console.log(loadedFiles[0].route, loadedFiles[0].file)
-
+            .then(links => {
+              console.log('Links encontrados'.green)
+               commandResponse(links, route);
             })
             .catch(error => {
-              reject(error)
+              console.log(error)
             })
         })
       })
@@ -49,18 +37,43 @@ const verifyPath = (route) => {
   }
 }
 
-verifyPath(route)
-
+mdLinks(route)
 // Obtengo nombre de la ruta
 const filePathName = (route) => {
   let directories = path.dirname(route);
   let filename = path.basename(route);
-  let pathOfFile = `${directories + '\\' + filename}`;
+  let pathOfFile = `${directories}/${filename}`;
   return pathOfFile;
 }
 
-// //entrypoint
+const commandResponse = (links, route) => {
+  links.map(link => {
+    let pathOfFile = filePathName(route);
+    let pepa = `${pathOfFile} ${link}`;
+    console.log(pepa);
+  });
+}
 
+// let comando = argv._[0];
+
+// switch (comando) {
+
+//     case 'validate':
+//         console.log('soy validate')
+//         break;
+
+//     case 'stats':
+//         console.log('soy stats')
+//         break;
+
+//     default:
+//         console.log('Comando no reconocido');
+// }
+
+
+//Se utiliza la información de la posición 0 del process.argv()
+
+// //entrypoint
 
 //1 leer path y verificar si es un directorio o un archivo
 
@@ -88,11 +101,6 @@ const filePathName = (route) => {
          // Broken: 1
 
 
-
-
-
-
-
 // Accede al comando ejecutado
 // let command = argv._[0]
 
@@ -105,4 +113,3 @@ const filePathName = (route) => {
 //   break;
 //   default:
 //     console.log('Command not recognized');
-// }
