@@ -1,3 +1,3 @@
 ### Links for test
-(https://www.twitter.com)
-(https://www.linkedin.com)
+[soy un link](https://www.twitter.com)
+[otro un link](https://www.linkedin.com)
