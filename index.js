@@ -94,39 +94,8 @@ const getLinksFromFiles = (route) => {
         reject(error);
       });
   });
-
 }
 
-
-
-// const fileLinkStatusAt = (route) => {
-//   let searchMd = '.md'
-//   let indexFile = route.includes(searchMd)
-//   if (indexFile != false) {
-//     readFile(route, 'utf-8')
-//     .then(response => {
-//       stats(response)
-//     })
-//     .catch(error => {
-//       console.log(`no se pudo validar ${error} :c`)
-//     })
-//   } else {
-//     readDirectoryFiles(route, "utf-8")
-//     .then(files => {
-//       files.forEach(filePath => {
-//         readFile(filePath)
-//           .then(links => {
-//             console.log('Links encontrados'.green)
-//             stats(links)
-//           })
-//           .catch(error => {
-//             console.log(error)
-//           })
-//       })
-//     })
-//     .catch(error =>  console.log(error))
-//   }
-// }
 // Obtengo nombre de la ruta
 const filePathName = (route) => {
   let directories = path.dirname(route);
