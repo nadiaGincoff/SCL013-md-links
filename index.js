@@ -38,15 +38,25 @@ const validateFileAt = (route) => {
   getLinksFromFiles(route)
   .then(allLinks=>{
     stadistics(allLinks)
-    .then(resultsAllLinks =>{
-      console.log("resultsAllLinks", resultsAllLinks)
+    .then(resultsAllLinks => {
+      const validLinks = resultsAllLinks.filter((r) => {
+        if (r.linkValido) {
+          return true;
+        }
+        return false;
+      });
+
+      console.table({
+        "Valid links:": validLinks.length,
+        "Not valid links:": (resultsAllLinks.length - validLinks.length)
+      });
     })
     .catch(error =>{
-      console.log("statistics error", error)
-    })
+      console.error("Error at getLinksFromFiles: ", error);
+    });
   })
   .catch(error=>{
-    console.log("Veamos", error)
+    console.error("Error at validateFileAt: ", error);
   }); 
 }
 
@@ -59,13 +69,19 @@ const getLinksFromFiles = (route) => {
       getLinksFromFilesPromeses.push(new Promise((resolve, reject) => {
         readFile(route, 'utf-8')
           .then(links => {
-            resolve(links)
-            console.log(links) 
+            resolve(links) 
           })
           .catch(error => {
             reject(error)
           });
       }));
+      Promise.all(getLinksFromFilesPromeses)
+      .then(allLinks => {
+        resolve(allLinks);
+      })
+      .catch(error => {
+        reject(error);
+      });
     } else {
       readDirectoryFiles(route, "utf-8")
         .then(files => {
@@ -80,16 +96,23 @@ const getLinksFromFiles = (route) => {
                 });
             }));
           }); // end For
+
+          Promise.all(getLinksFromFilesPromeses)
+          .then((promisesLinksResults = []) => {
+            // los resultados de las promesas vienen asi: [["", ""], ["", ""]]
+            // pero los tenemos que componer asi: ["", ".", "", ""]
+            let concatenatedLinks = [];
+            promisesLinksResults.forEach(promiseResult => {
+              concatenatedLinks = concatenatedLinks.concat(promiseResult);
+            });
+            resolve(concatenatedLinks);
+          })
+          .catch(error => {
+            reject(error);
+          });
         })
-        .catch(error => console.log(error))
+        .catch(error => console.error("Error readDirectoryFiles", error))
     }
-    Promise.all(getLinksFromFilesPromeses)
-      .then(allLinks => {
-        resolve(allLinks);
-      })
-      .catch(error => {
-        reject(error);
-      });
   });
 }
 
