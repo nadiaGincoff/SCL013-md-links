@@ -2,9 +2,9 @@
 'use strict';
 const colors = require('colors')
 const path = require('path');
-const { readFile, readDirectoryFiles, checkStatusCode, stats } = require('./src/fileReaded')
+const { readFile, readDirectoryFiles, checkStatusCode, stats, statsAndValidate} = require('./src/fileReaded')
 
-const mdLinks = (route) => {
+const findLinksInTheFile = (route) => {
   let searchMd = '.md'
   let indexFile = route.includes(searchMd)
   // proceso el path y veo que es
@@ -88,6 +88,36 @@ const fileLinkStatusAt = (route) => {
   }
 }
 
+const validateStatsForFileAt = (route) => {
+  let searchMd = '.md'
+  let indexFile = route.includes(searchMd)
+  if (indexFile != false) {
+    readFile(route, 'utf-8')
+    .then(links => {
+
+      statsAndValidate(links, route)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+
+  } else {
+    readDirectoryFiles(route, "utf-8")
+    .then(files => {
+      files.forEach(filePath => {
+        readFile(filePath)
+          .then(links => {
+            statsAndValidate(links, route)
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      })
+    })
+    .catch(error =>  console.log(error))
+  }
+}
+
 // Obtengo nombre de la ruta
 const filePathName = (route) => {
   let directories = path.dirname(route);
@@ -105,7 +135,8 @@ const commandResponse = (links, route) => {
 }
 
 module.exports = {
-  mdLinks,
+  findLinksInTheFile,
   validateFileAt,
-  fileLinkStatusAt
+  fileLinkStatusAt,
+  validateStatsForFileAt
 }

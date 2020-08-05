@@ -133,5 +133,5 @@ module.exports = {
   readDirectoryFiles,
   checkStatusCode,
   stats,
-  //statsAndValidate
+  statsAndValidate
 }
