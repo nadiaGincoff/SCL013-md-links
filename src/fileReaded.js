@@ -47,33 +47,58 @@ const getHttpStatus = (url) => {
   return new Promise((resolve, reject) => {
     fetchUrl(url, (error, meta, body) => {
       if (error) {
-        reject(error)
-      } else {
-        resolve(meta.status)
-      }
+        if(error.code === "ENOTFOUND" || error.code === "ECONNREFUSED")
+          resolve(false);
+        else
+          reject(error);       
+      } else
+        resolve(true);      
     });
   })
 }
 
-let linksValidos = []
-let linksBroken = []
-
 const checkStatusCode = (links, route) => {
-  links.map(link => {
-    getHttpStatus(link)
-      .then(response => {
-        linksValidos.push(response)
-        console.log( route, link, `El estado del link es ${response} OK!`.green);
-      })
-      .catch(error => {
-        linksBroken.push(error)
-        console.log(`${route} ${error}`,` Fail 404`.red);
-      });
+    return new Promise ((resolve, reject) => {
+    const linksValidatedPromises = [];      
+    links.map(link => {
+      linksValidatedPromises.push(new Promise((resolve, reject) => {
+        getHttpStatus(link)
+          .then( isValid => {
+            resolve({
+              linkValido:isValid,
+              url: link                    
+            });
+          })
+          .catch(error => {  
+          reject(error);
+          });
+
+      }));    
+    }); // end map
+    Promise.all(linksValidatedPromises)
+    .then((allResults)=>{
+      resolve(allResults)
+    })
+    .catch((error)=>{
+      reject(error)
+    })
   });
+
+  
+}
+const stadistics = (urls = [])=>{
+  return checkStatusCode(urls) 
+  .then((allResults)=>{
+  return allResults
+  })
+  .catch((error)=>{
+    return error
+  })
 }
 
 module.exports = {
   readFile,
   readDirectoryFiles,
   checkStatusCode,
+  stadistics
 }
