@@ -19,7 +19,3 @@ if (argv._[0] === route) {
     console.log(argv)
   }
 }
-
-/**
- * Tener diferentes funciones para cada argumento
- */

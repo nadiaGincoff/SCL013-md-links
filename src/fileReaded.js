@@ -66,27 +66,27 @@ const checkStatusCode = (links, route) => {
 const stats = (links, route) => {
   let promises = promiseArrangement(links);
 
-
-  //manipulacion sobre links para obtener la cantidad de links unicos
-  /*
-    CODE :D
-  */
-
   // promise.allsettled espera a que se terminen de ejecutar todas las promesas dadas y ahi es cuando llama al resolve con un array que contiene los datos del resultado de esas operaciones
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
   Promise.allSettled(promises)
     .then(urlResponses => {
-      console.log(`Hemos analizado los links de los archivos .md de ${route}`.yellow)
+      console.log(`===========================================================`.rainbow)
+      console.log(`                                                                   `)
+      console.log(` Hemos analizado los links de ${route}`)
+      console.log(`                                                                   `)
 
       let totalLinks = urlResponses.length
-      let fulfilledLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'fulfilled').length
-      // let rejectedLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'rejected').length
+      let uniqueLink = getUniqueLinks(urlResponses);
 
-      console.log('=== Links analizados en el archivo === '.yellow)
-      console.log("TOTAL","===>".rainbow, totalLinks)
-      console.log("UNIQUE","==>".rainbow, "?")
-      // console.log("BAD =====>", rejectedLinksCount)
+      const stats = {
+        LinksTotales: totalLinks,
+        LinksUnicos: uniqueLink
+      }
 
+      console.log(' Links analizados en el archivo:')
+      console.table(stats)
+      console.log(`                                                                   `)
+      console.log(`===========================================================`.rainbow)
   })
 }
 
@@ -94,19 +94,24 @@ const statsAndValidate = (links, route) => {
   let promises = promiseArrangement(links);
 
   Promise.allSettled(promises)
-    .then(urlResponse => {
+    .then(urlResponses => {
+
       console.log("FILE ===>", route)
 
-      let totalLinks = urlResponse.length
+      let totalLinks = urlResponses.length
+      let uniqueLink = getUniqueLinks(urlResponses);
+      let fulfilledLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'fulfilled').length
       let rejectedLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'rejected').length
 
       console.log('== LINKS READED == ')
       console.log('TOTAL ===>', totalLinks)
-      console.log("UNIQUE ====>", "?")
+      console.log("UNIQUE ====>", uniqueLink)
+      console.log("Links Buenos ====>", fulfilledLinksCount)
       console.log("BAD ====>", rejectedLinksCount)
     })
 }
 
+// Array de promesas generadas por getHttpStatus
 const promiseArrangement = (links) => {
   let promises = [];
   links.map(link => {
@@ -115,9 +120,18 @@ const promiseArrangement = (links) => {
   return promises;
 }
 
+const getUniqueLinks = (urlResponses) => {
+  let fulfilledLinks = urlResponses.filter(urlResponse => urlResponse.status === 'fulfilled').map(object => object.value.finalUrl);
+  let rejectedLinks = urlResponses.filter(urlResponse => urlResponse.status === 'rejected').map(object => object.reason.hostname);
+  let newArray = fulfilledLinks.concat(rejectedLinks);
+  let getUniqueLinks = newArray.filter((element, index) => newArray.indexOf(element) === index).length;
+  return getUniqueLinks;
+}
+
 module.exports = {
   readFile,
   readDirectoryFiles,
   checkStatusCode,
-  stats
+  stats,
+  //statsAndValidate
 }
