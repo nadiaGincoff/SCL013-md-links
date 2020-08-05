@@ -2,25 +2,31 @@
 'use strict';
 const colors = require('colors')
 const path = require('path');
-const { readFile, readDirectoryFiles, checkStatusCode, stadistics} = require('./src/fileReaded')
+const { readFile, readDirectoryFiles, checkStatusCode, stadistics } = require('./src/fileReaded');
+const { promises } = require('fs');
+const { resolve } = require('path');
 
 const mdLinks = (route) => {
+  console.log("veamos se entra")
   let searchMd = '.md'
   let indexFile = route.includes(searchMd)
   // proceso el path y veo que es
   if (indexFile != false) {
+   
     readFile(route, "utf-8")
       .then(response => {
         commandResponse(response, route);
       })
       .catch(error => console.log(error))
   } else {
+    
     readDirectoryFiles(route, "utf-8")
       .then(files => {
+        console.log(files)
         files.forEach(filePath => {
           readFile(filePath)
             .then(links => {
-               commandResponse(links, route);
+              commandResponse(links, route);
             })
             .catch(error => {
               console.log(error)
@@ -32,44 +38,66 @@ const mdLinks = (route) => {
 }
 
 const validateFileAt = (route) => {
-  let searchMd = '.md'
-  let indexFile = route.includes(searchMd)
-  if (indexFile != false) {
-    readFile(route, 'utf-8')
-    .then(response => {
-      //checkStatusCode(response, route)
-      stadistics(response)
-      .then((data)=>{
-        console.log(data)
-      })
+  getLinksFromFiles(route)
+  .then(allLinks=>{
+    stadistics(allLinks)
+    .then(resultsAllLinks =>{
+      console.log("resultsAllLinks", resultsAllLinks)
     })
-    .catch(error => {
-      console.log(`no se pudo validar ${error} :c`)
+    .catch(error =>{
+      console.log("statistics error", error)
     })
-  } else {
-    readDirectoryFiles(route, "utf-8")
-    .then(files => {
-      let resultsStatistics = [];
-      files.forEach(filePath => {
-        readFile(filePath)
+  })
+  .catch(error=>{
+    console.log("Veamos", error)
+  }); 
+}
+
+const getLinksFromFiles = (route) => {
+  return new Promise((resolve, reject) => {
+    const getLinksFromFilesPromeses = [];
+    let searchMd = '.md'
+    let indexFile = route.includes(searchMd)
+    if (indexFile != false) {
+      getLinksFromFilesPromeses.push(new Promise((resolve, reject) => {
+        readFile(route, 'utf-8')
           .then(links => {
-            //checkStatusCode(links, route);
-            stadistics(links)
-            .then((linksVerified)=>{
-             resultsStatistics = resultsStatistics.concat(linksVerified)
-             console.log( "data", resultsStatistics)
-            });
-            
+            resolve(links)
+            console.log(links) 
           })
           .catch(error => {
-            console.log(error)
-          })
-        
+            reject(error)
+          });
+      }));
+    } else {
+      readDirectoryFiles(route, "utf-8")
+        .then(files => {
+          files.forEach(filePath => {
+            getLinksFromFilesPromeses.push(new Promise((resolve, reject) => {
+              readFile(filePath)
+                .then(links => {
+                  resolve(links);
+                })
+                .catch(error => {
+                  reject(error);
+                });
+            }));
+          }); // end For
+        })
+        .catch(error => console.log(error))
+    }
+    Promise.all(getLinksFromFilesPromeses)
+      .then(allLinks => {
+        resolve(allLinks);
       })
-    })
-    .catch(error =>  console.log(error))
-  }
+      .catch(error => {
+        reject(error);
+      });
+  });
+
 }
+
+
 
 // const fileLinkStatusAt = (route) => {
 //   let searchMd = '.md'
