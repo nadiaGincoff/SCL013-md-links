@@ -2,7 +2,7 @@
 'use strict';
 const colors = require('colors')
 const path = require('path');
-const { readFile, readDirectoryFiles, checkStatusCode} = require('./src/fileReaded')
+const { readFile, readDirectoryFiles, checkStatusCode, stadistics} = require('./src/fileReaded')
 
 const mdLinks = (route) => {
   let searchMd = '.md'
@@ -37,7 +37,11 @@ const validateFileAt = (route) => {
   if (indexFile != false) {
     readFile(route, 'utf-8')
     .then(response => {
-      checkStatusCode(response, route)
+      //checkStatusCode(response, route)
+      stadistics(response)
+      .then((data)=>{
+        console.log(data)
+      })
     })
     .catch(error => {
       console.log(`no se pudo validar ${error} :c`)
@@ -45,14 +49,22 @@ const validateFileAt = (route) => {
   } else {
     readDirectoryFiles(route, "utf-8")
     .then(files => {
+      let resultsStatistics = [];
       files.forEach(filePath => {
         readFile(filePath)
           .then(links => {
-            checkStatusCode(links, route);
+            //checkStatusCode(links, route);
+            stadistics(links)
+            .then((linksVerified)=>{
+             resultsStatistics = resultsStatistics.concat(linksVerified)
+             console.log( "data", resultsStatistics)
+            });
+            
           })
           .catch(error => {
             console.log(error)
           })
+        
       })
     })
     .catch(error =>  console.log(error))
