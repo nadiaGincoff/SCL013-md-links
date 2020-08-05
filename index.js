@@ -1,39 +1,36 @@
 #!/usr/bin/env node
 'use strict';
-const colors = require('colors')
 const path = require('path');
-const { readFile, readDirectoryFiles, checkStatusCode, stadistics } = require('./src/fileReaded');
-const { promises } = require('fs');
-const { resolve } = require('path');
+const {
+  readFile,
+  readDirectoryFiles,
+  stadistics
+} = require('./src/fileReaded');
 
 const mdLinks = (route) => {
-  console.log("veamos se entra")
   let searchMd = '.md'
-  let indexFile = route.includes(searchMd)
+  let indexFile = route.includes(searchMd);
   // proceso el path y veo que es
   if (indexFile != false) {
-   
     readFile(route, "utf-8")
       .then(response => {
         commandResponse(response, route);
       })
-      .catch(error => console.log(error))
+      .catch(error => console.error("Error at mdLinks: ", error));
   } else {
-    
     readDirectoryFiles(route, "utf-8")
       .then(files => {
-        console.log(files)
         files.forEach(filePath => {
           readFile(filePath)
             .then(links => {
               commandResponse(links, route);
             })
             .catch(error => {
-              console.log(error)
-            })
+              console.error("Error at mdLinks: ", error)
+            });
         })
       })
-      .catch(error => console.log(error))
+      .catch(error => console.error("Error at mdLinks: ", error));
   }
 }
 
