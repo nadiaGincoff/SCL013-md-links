@@ -1,17 +1,18 @@
 const fs = require('fs');
 const FileHound = require('filehound');
+const colors = require('colors')
 const fetch = require("fetch");
+const { hostname } = require('os');
 const fetchUrl = fetch.fetchUrl;
 
-const linksObtenidos = []
 // Lee el archivo de una ruta especifica
-const readFile = (route, options) => {
+const readFile = (route) => {
   return new Promise ((resolve, reject) => {
     fs.readFile(route, 'UTF-8' , (error, data) => {
       if (error) {
         reject(error)
       } else {
-        resolve(extractLinks(data, options))
+        resolve(extractLinks(data))
       }
     })
   })
@@ -24,23 +25,21 @@ const readDirectoryFiles = (route) => {
       .ext('md')
       .find()
       .then(files => {
+        // No funciona
+        // if (files !== files) {
+        //   console.log(`No se encontraron archivos .md en su directorio ${route}`)
+        // }
         resolve(files)
       })
-      .catch(error => reject(`No se encontro ningun archivo </3 ${error}`))
+      .catch(error => {
+          reject(`${error} No se encontraron archivos .md en su directorio ${route}`)
+      })
   })
 }
 
-const extractLinks = (string, options) => {
-
+const extractLinks = (data) => {
   const expReg = /(((https?:\/\/)|(http?:\/\/)|(www\.))[^\s\n]+)(?=\))/g;
-  const links = string.match(expReg)
-
-  // links.forEach(link => {
-  //   linksObtenidos.push(link)
-  //   //console.log('somos los links obtenidos', linksObtenidos)
-  // })
-
-  // checkStatusCode(links);
+  const links = data.match(expReg)
   return links
 }
 
@@ -56,19 +55,25 @@ const getHttpStatus = (url) => {
   })
 }
 
-const checkStatusCode = (links) => {
+let linksValidos = []
+let linksBroken = []
+
+const checkStatusCode = (links, route) => {
   links.map(link => {
     getHttpStatus(link)
       .then(response => {
-        console.log('El estado de ', link, 'es: ', response, links.length);
+        linksValidos.push(response)
+        console.log( route, link, `El estado del link es ${response} OK!`.green);
       })
       .catch(error => {
-        console.log(`Fail 404 ${error}`, errores);
+        linksBroken.push(error)
+        console.log(`${route} ${error}`,` Fail 404`.red);
       });
   });
 }
 
 module.exports = {
   readFile,
-  readDirectoryFiles
+  readDirectoryFiles,
+  checkStatusCode,
 }

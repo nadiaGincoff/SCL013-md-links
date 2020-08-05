@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 'use strict';
-
 const colors = require('colors')
-const argv = require('./config/yargs').argv
 const path = require('path');
-
-const route = process.argv[2]
-const { readFile, readDirectoryFiles } = require('./src/fileReaded')
+const { readFile, readDirectoryFiles, checkStatusCode} = require('./src/fileReaded')
 
 const mdLinks = (route) => {
   let searchMd = '.md'
@@ -18,14 +14,12 @@ const mdLinks = (route) => {
         commandResponse(response, route);
       })
       .catch(error => console.log(error))
-
   } else {
     readDirectoryFiles(route, "utf-8")
       .then(files => {
         files.forEach(filePath => {
           readFile(filePath)
             .then(links => {
-              console.log('Links encontrados'.green)
                commandResponse(links, route);
             })
             .catch(error => {
@@ -37,7 +31,62 @@ const mdLinks = (route) => {
   }
 }
 
-mdLinks(route)
+const validateFileAt = (route) => {
+  let searchMd = '.md'
+  let indexFile = route.includes(searchMd)
+  if (indexFile != false) {
+    readFile(route, 'utf-8')
+    .then(response => {
+      checkStatusCode(response, route)
+    })
+    .catch(error => {
+      console.log(`no se pudo validar ${error} :c`)
+    })
+  } else {
+    readDirectoryFiles(route, "utf-8")
+    .then(files => {
+      files.forEach(filePath => {
+        readFile(filePath)
+          .then(links => {
+            checkStatusCode(links, route);
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      })
+    })
+    .catch(error =>  console.log(error))
+  }
+}
+
+// const fileLinkStatusAt = (route) => {
+//   let searchMd = '.md'
+//   let indexFile = route.includes(searchMd)
+//   if (indexFile != false) {
+//     readFile(route, 'utf-8')
+//     .then(response => {
+//       stats(response)
+//     })
+//     .catch(error => {
+//       console.log(`no se pudo validar ${error} :c`)
+//     })
+//   } else {
+//     readDirectoryFiles(route, "utf-8")
+//     .then(files => {
+//       files.forEach(filePath => {
+//         readFile(filePath)
+//           .then(links => {
+//             console.log('Links encontrados'.green)
+//             stats(links)
+//           })
+//           .catch(error => {
+//             console.log(error)
+//           })
+//       })
+//     })
+//     .catch(error =>  console.log(error))
+//   }
+// }
 // Obtengo nombre de la ruta
 const filePathName = (route) => {
   let directories = path.dirname(route);
@@ -49,29 +98,31 @@ const filePathName = (route) => {
 const commandResponse = (links, route) => {
   links.map(link => {
     let pathOfFile = filePathName(route);
-    let pepa = `${pathOfFile} ${link}`;
-    console.log(pepa);
+    let responseMdLinks = `${pathOfFile} ${link}`;
+    return console.log(responseMdLinks)
   });
 }
 
-// let comando = argv._[0];
-
-// switch (comando) {
-
-//     case 'validate':
-//         console.log('soy validate')
-//         break;
-
-//     case 'stats':
-//         console.log('soy stats')
-//         break;
-
-//     default:
-//         console.log('Comando no reconocido');
-// }
+module.exports = {
+  mdLinks,
+  validateFileAt,
+}
 
 
-//Se utiliza la información de la posición 0 del process.argv()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // //entrypoint
 
@@ -99,17 +150,3 @@ const commandResponse = (links, route) => {
          // Total: 3
          // Unique: 3
          // Broken: 1
-
-
-// Accede al comando ejecutado
-// let command = argv._[0]
-
-// switch( command ) {
-//   case 'validate':
-//     //console.log(listarArchivosDeDirectorio(path))
-//   break;
-//   case 'stats':
-//     console.log('stats')
-//   break;
-//   default:
-//     console.log('Command not recognized');
