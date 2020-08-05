@@ -47,10 +47,7 @@ const getHttpStatus = (url) => {
   return new Promise((resolve, reject) => {
     fetchUrl(url, (error, meta, body) => {
       if (error) {
-        if(error.code === "ENOTFOUND" || error.code === "ECONNREFUSED")
-          resolve(false);
-        else
-          reject(error);       
+        resolve(false); // error controlado
       } else
         resolve(true);      
     });
@@ -83,17 +80,18 @@ const checkStatusCode = (links, route) => {
       reject(error)
     })
   });
-
-  
 }
-const stadistics = (urls = [])=>{
-  return checkStatusCode(urls) 
-  .then((allResults)=>{
-  return allResults
-  })
-  .catch((error)=>{
-    return error
-  })
+
+const stadistics = (urls = []) => {
+  return new Promise((resolve, reject) => {
+    checkStatusCode(urls) 
+      .then((allResults)=>{
+        resolve(allResults);
+      })
+      .catch((error) => {
+        reject(error)
+      });
+  });
 }
 
 module.exports = {
