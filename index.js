@@ -2,7 +2,7 @@
 'use strict';
 const colors = require('colors')
 const path = require('path');
-const { readFile, readDirectoryFiles, checkStatusCode} = require('./src/fileReaded')
+const { readFile, readDirectoryFiles, checkStatusCode, stats } = require('./src/fileReaded')
 
 const mdLinks = (route) => {
   let searchMd = '.md'
@@ -59,34 +59,36 @@ const validateFileAt = (route) => {
   }
 }
 
-// const fileLinkStatusAt = (route) => {
-//   let searchMd = '.md'
-//   let indexFile = route.includes(searchMd)
-//   if (indexFile != false) {
-//     readFile(route, 'utf-8')
-//     .then(response => {
-//       stats(response)
-//     })
-//     .catch(error => {
-//       console.log(`no se pudo validar ${error} :c`)
-//     })
-//   } else {
-//     readDirectoryFiles(route, "utf-8")
-//     .then(files => {
-//       files.forEach(filePath => {
-//         readFile(filePath)
-//           .then(links => {
-//             console.log('Links encontrados'.green)
-//             stats(links)
-//           })
-//           .catch(error => {
-//             console.log(error)
-//           })
-//       })
-//     })
-//     .catch(error =>  console.log(error))
-//   }
-// }
+
+const fileLinkStatusAt = (route) => {
+  let searchMd = '.md'
+  let indexFile = route.includes(searchMd)
+  if (indexFile != false) {
+    readFile(route, 'utf-8')
+    .then(links => {
+      stats(links, route)
+    })
+    .catch(error => {
+      console.log(error)
+    })
+
+  } else {
+    readDirectoryFiles(route, "utf-8")
+    .then(files => {
+      files.forEach(filePath => {
+        readFile(filePath)
+          .then(links => {
+            stats(links, route)
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      })
+    })
+    .catch(error =>  console.log(error))
+  }
+}
+
 // Obtengo nombre de la ruta
 const filePathName = (route) => {
   let directories = path.dirname(route);
@@ -106,6 +108,7 @@ const commandResponse = (links, route) => {
 module.exports = {
   mdLinks,
   validateFileAt,
+  fileLinkStatusAt
 }
 
 

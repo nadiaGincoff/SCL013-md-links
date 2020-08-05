@@ -25,14 +25,10 @@ const readDirectoryFiles = (route) => {
       .ext('md')
       .find()
       .then(files => {
-        // No funciona
-        // if (files !== files) {
-        //   console.log(`No se encontraron archivos .md en su directorio ${route}`)
-        // }
+        if (files.length == 0) {
+          reject(`No se encontraron archivos .md en su directorio ${route}`)
+        }
         resolve(files)
-      })
-      .catch(error => {
-          reject(`${error} No se encontraron archivos .md en su directorio ${route}`)
       })
   })
 }
@@ -49,31 +45,79 @@ const getHttpStatus = (url) => {
       if (error) {
         reject(error)
       } else {
-        resolve(meta.status)
+        resolve(meta)
       }
     });
   })
 }
 
-let linksValidos = []
-let linksBroken = []
-
 const checkStatusCode = (links, route) => {
   links.map(link => {
     getHttpStatus(link)
       .then(response => {
-        linksValidos.push(response)
-        console.log( route, link, `El estado del link es ${response} OK!`.green);
+        console.log( route, link, `El estado del link es ${response.status} OK!`.green);
       })
       .catch(error => {
-        linksBroken.push(error)
         console.log(`${route} ${error}`,` Fail 404`.red);
       });
   });
+}
+
+const stats = (links, route) => {
+  let promises = promiseArrangement(links);
+
+
+  //manipulacion sobre links para obtener la cantidad de links unicos
+  /*
+    CODE :D
+  */
+
+  // promise.allsettled espera a que se terminen de ejecutar todas las promesas dadas y ahi es cuando llama al resolve con un array que contiene los datos del resultado de esas operaciones
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
+  Promise.allSettled(promises)
+    .then(urlResponses => {
+      console.log(`Hemos analizado los links de los archivos .md de ${route}`.yellow)
+
+      let totalLinks = urlResponses.length
+      let fulfilledLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'fulfilled').length
+      // let rejectedLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'rejected').length
+
+      console.log('=== Links analizados en el archivo === '.yellow)
+      console.log("TOTAL","===>".rainbow, totalLinks)
+      console.log("UNIQUE","==>".rainbow, "?")
+      // console.log("BAD =====>", rejectedLinksCount)
+
+  })
+}
+
+const statsAndValidate = (links, route) => {
+  let promises = promiseArrangement(links);
+
+  Promise.allSettled(promises)
+    .then(urlResponse => {
+      console.log("FILE ===>", route)
+
+      let totalLinks = urlResponse.length
+      let rejectedLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'rejected').length
+
+      console.log('== LINKS READED == ')
+      console.log('TOTAL ===>', totalLinks)
+      console.log("UNIQUE ====>", "?")
+      console.log("BAD ====>", rejectedLinksCount)
+    })
+}
+
+const promiseArrangement = (links) => {
+  let promises = [];
+  links.map(link => {
+    promises.push(getHttpStatus(link));
+  });
+  return promises;
 }
 
 module.exports = {
   readFile,
   readDirectoryFiles,
   checkStatusCode,
+  stats
 }
