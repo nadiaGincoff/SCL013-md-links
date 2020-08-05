@@ -1,3 +1,3 @@
 ### Links for test
-(https://www.instagraham.fzs)
+(https://www.instagram.fzs)
 (https://www.errorsz.sssss)
