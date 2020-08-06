@@ -2,7 +2,7 @@
 'use strict';
 const colors = require('colors')
 const path = require('path');
-const { readFile, readDirectoryFiles, checkStatusCode, stats, statsAndValidate} = require('./src/fileReaded')
+const { readFile, readDirectoryFiles, checkStatusCode, stats, statsAndValidate, truncateTo30Characters } = require('./src/fileReaded')
 
 const findLinksInTheFile = (route) => {
   let searchMd = '.md'
@@ -130,10 +130,12 @@ const filePathName = (route) => {
 const commandResponse = (links, route) => {
   links.map(link => {
     let pathOfFile = filePathName(route);
-    let responseMdLinks = `${pathOfFile} ${link.green}`;
+    let responseMdLinks = `${truncateTo30Characters(pathOfFile.gray)} ${truncateTo30Characters(link.white)}`;
     return console.log(responseMdLinks)
   });
 }
+
+
 
 module.exports = {
   findLinksInTheFile,

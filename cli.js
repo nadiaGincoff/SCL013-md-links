@@ -14,8 +14,8 @@ const mdLinks = (route, argv) => {
     } else if ((argv.validate || argv.v) && (argv.stats || argv.s)) {
       validateStatsForFileAt(route)
     } else if (argv.validate || argv.v) {
-      console.log(` VALIDACION DE LINKS EN EJECUCIÓN `.yellow)
-      console.log(`                                                                   `)
+      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
+      console.log(` VALIDACION DE LINKS`.yellow)
       console.log(` Hemos analizado el archivo ${route}, los links analizados son los siguientes:`)
       console.log(`                                                                   `)
       validateFileAt(route)

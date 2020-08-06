@@ -2,8 +2,20 @@ const fs = require('fs');
 const FileHound = require('filehound');
 const colors = require('colors')
 const fetch = require("fetch");
+const emojis = require('console-emojis')
 const { hostname } = require('os');
+
 const fetchUrl = fetch.fetchUrl;
+
+
+const truncateTo30Characters = (text) => {
+  if (text.length > 30) {
+    const text40 = text.slice(0, 30);
+    return text40;
+  } else {
+    return text;
+  }
+}
 
 // Lee el archivo de una ruta especifica
 const readFile = (route) => {
@@ -55,10 +67,10 @@ const checkStatusCode = (links, route) => {
   links.map(link => {
     getHttpStatus(link)
       .then(response => {
-        console.log(` ${ route} ${link}`,`El estado del link es ${response.status} OK!`.green);
+        console.log(`${truncateTo30Characters(route.grey)} ${truncateTo30Characters(link.white)}`,` Status: ${response.status} OK! ☻`.green);
       })
       .catch(error => {
-        console.log(` ${route} ${error}`,` Fail 404`.red);
+        console.x(` ${truncateTo30Characters(route.grey)} ${truncateTo30Characters(error)}`,` Fail 404`.red);
       });
   });
 }
@@ -76,17 +88,18 @@ const stats = (links, route) => {
       let uniqueLink = getUniqueLinks(urlResponses);
 
       const stats = {
-        LinksTotales: totalLinks,
-        LinksUnicos: uniqueLink
+        Totales: totalLinks,
+        Unicos: uniqueLink
       }
-      console.log(` OBTENIENDO ESTADÍSTICAS `.yellow)
+
       console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
+      console.log(`                                                                   `)
+      console.log(` ESTADÍSTICAS `.yellow)
       console.log(`                                                                   `)
       console.log(` Hemos analizado los links de ${route}`)
       console.log(`                                                                   `)
       console.log(' Estadística de los links analizados en el archivo:')
       console.table(stats)
-      console.log(`                                                                   `)
       console.log(`                                                                   `)
       console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
   })
@@ -103,22 +116,23 @@ const statsAndValidate = (links, route) => {
       let fulfilledLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'fulfilled').length
       let rejectedLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'rejected').length
 
-      const stats = {
-        LinksTotales: totalLinks,
-        LinksUnicos: uniqueLink,
-        LinksConStatus200: fulfilledLinksCount,
-        LinksRotos: rejectedLinksCount
+      const statsLinks = {
+        Totales: totalLinks,
+        Únicos: uniqueLink,
+        Status200: fulfilledLinksCount,
+        Rotos: rejectedLinksCount
       }
 
-      console.log(`VALIDACIÓN Y ESTADÍSTICAS `.yellow)
       console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
+      console.log(`                                                                   `)
+      console.log(` VALIDACIÓN Y ESTADÍSTICAS `.yellow)
       console.log(`                                                                   `)
       console.log(` Hemos analizado los links de ${route}`)
       console.log(' Estadística de los links analizados:')
       console.log(`                                                                   `)
-      console.table(stats)
+      console.table(statsLinks)
       console.log(`                                                                   `)
-      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
+      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
     })
 }
 
@@ -144,5 +158,6 @@ module.exports = {
   readDirectoryFiles,
   checkStatusCode,
   stats,
-  statsAndValidate
+  statsAndValidate,
+  truncateTo30Characters
 }
