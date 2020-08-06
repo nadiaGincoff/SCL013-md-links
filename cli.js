@@ -1,24 +1,26 @@
-#!/usr/bin/env node
-'use strict';
 
-const { argv } = require('yargs');
 const { findLinksInTheFile, validateFileAt, fileLinkStatusAt, validateStatsForFileAt } = require('./index.js')
-
-const route = process.argv[2]
 
 const mdLinks = (route, argv) => {
 
   if (argv._[0] === route) {
     let hasArguments = process.argv.length > 3
     if (!hasArguments) {
+      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
+      console.log(`                                                                   `)
+      console.log(` Hemos analizado ${route}, los links encontrados son los siguientes:`.yellow)
+      console.log(`                                                                   `)
       findLinksInTheFile(route)
     } else if ((argv.validate || argv.v) && (argv.stats || argv.s)) {
-      console.log('validando y stats')
       validateStatsForFileAt(route)
     } else if (argv.validate || argv.v) {
+      console.log(` VALIDACION DE LINKS EN EJECUCIÓN `.yellow)
+      console.log(`                                                                   `)
+      console.log(` Hemos analizado el archivo ${route}, los links analizados son los siguientes:`)
+      console.log(`                                                                   `)
       validateFileAt(route)
+      console.log(`                                                                   `)
     } else if (argv.stats || argv.s) {
-      console.log('stats')
       fileLinkStatusAt(route)
     } else {
       console.log(argv)
@@ -26,4 +28,6 @@ const mdLinks = (route, argv) => {
   }
 }
 
-mdLinks(route, argv);
+module.exports = {
+   mdLinks
+}

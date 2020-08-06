@@ -1,7 +1,6 @@
 {
-  "name": "md-links",
+  "name": "ne-md-links",
   "version": "0.1.0",
-  "bin": "cli.js",
   "description": "## Índice",
   "main": "cli.js",
   "directories": {
@@ -17,6 +16,10 @@
   "keywords": [],
   "author": "Nadia Gincoff - Eiliana Aguilar",
   "license": "ISC",
+  "bin": {
+    "md-links": "./bin/global.js"
+  },
+  "preferGlobal": true,
   "bugs": {
     "url": "https://github.com/eilianacar/SCL013-md-links/issues"
   },

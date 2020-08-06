@@ -37,6 +37,7 @@ const validateFileAt = (route) => {
   if (indexFile != false) {
     readFile(route, 'utf-8')
     .then(response => {
+
       checkStatusCode(response, route)
     })
     .catch(error => {
@@ -129,7 +130,7 @@ const filePathName = (route) => {
 const commandResponse = (links, route) => {
   links.map(link => {
     let pathOfFile = filePathName(route);
-    let responseMdLinks = `${pathOfFile} ${link}`;
+    let responseMdLinks = `${pathOfFile} ${link.green}`;
     return console.log(responseMdLinks)
   });
 }

@@ -55,10 +55,10 @@ const checkStatusCode = (links, route) => {
   links.map(link => {
     getHttpStatus(link)
       .then(response => {
-        console.log( route, link, `El estado del link es ${response.status} OK!`.green);
+        console.log(` ${ route} ${link}`,`El estado del link es ${response.status} OK!`.green);
       })
       .catch(error => {
-        console.log(`${route} ${error}`,` Fail 404`.red);
+        console.log(` ${route} ${error}`,` Fail 404`.red);
       });
   });
 }
@@ -70,10 +70,7 @@ const stats = (links, route) => {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled
   Promise.allSettled(promises)
     .then(urlResponses => {
-      console.log(`===========================================================`.rainbow)
-      console.log(`                                                                   `)
-      console.log(` Hemos analizado los links de ${route}`)
-      console.log(`                                                                   `)
+
 
       let totalLinks = urlResponses.length
       let uniqueLink = getUniqueLinks(urlResponses);
@@ -82,11 +79,16 @@ const stats = (links, route) => {
         LinksTotales: totalLinks,
         LinksUnicos: uniqueLink
       }
-
-      console.log(' Links analizados en el archivo:')
+      console.log(` OBTENIENDO ESTADÍSTICAS `.yellow)
+      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
+      console.log(`                                                                   `)
+      console.log(` Hemos analizado los links de ${route}`)
+      console.log(`                                                                   `)
+      console.log(' Estadística de los links analizados en el archivo:')
       console.table(stats)
       console.log(`                                                                   `)
-      console.log(`===========================================================`.rainbow)
+      console.log(`                                                                   `)
+      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
   })
 }
 
@@ -96,18 +98,27 @@ const statsAndValidate = (links, route) => {
   Promise.allSettled(promises)
     .then(urlResponses => {
 
-      console.log("FILE ===>", route)
-
       let totalLinks = urlResponses.length
       let uniqueLink = getUniqueLinks(urlResponses);
       let fulfilledLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'fulfilled').length
       let rejectedLinksCount = urlResponses.filter(urlResponse => urlResponse.status === 'rejected').length
 
-      console.log('== LINKS READED == ')
-      console.log('TOTAL ===>', totalLinks)
-      console.log("UNIQUE ====>", uniqueLink)
-      console.log("Links Buenos ====>", fulfilledLinksCount)
-      console.log("BAD ====>", rejectedLinksCount)
+      const stats = {
+        LinksTotales: totalLinks,
+        LinksUnicos: uniqueLink,
+        LinksConStatus200: fulfilledLinksCount,
+        LinksRotos: rejectedLinksCount
+      }
+
+      console.log(`VALIDACIÓN Y ESTADÍSTICAS `.yellow)
+      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
+      console.log(`                                                                   `)
+      console.log(` Hemos analizado los links de ${route}`)
+      console.log(' Estadística de los links analizados:')
+      console.log(`                                                                   `)
+      console.table(stats)
+      console.log(`                                                                   `)
+      console.log(`▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲▼▲`.rainbow)
     })
 }
 
